@@ -71,4 +71,4 @@ def from_slot(time_slot:int):
 # for slot in range(8):
 #     print(slot, from_slot(slot), to_slot(*from_slot(slot)))
 
-print(to_slot(0,0,59),to_slot(0,0,45),from_slot(to_slot(0, 0, 59)))
+# print(to_slot(0,0,59),to_slot(0,0,45),from_slot(to_slot(0, 0, 59)))
