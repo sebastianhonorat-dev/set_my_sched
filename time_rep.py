@@ -42,7 +42,7 @@ def from_slot(time_slot:int):
     if type(time_slot) is not int:
         raise TypeError("Time slot must be integer")
     
-    if time_slot not in range(weekly_slot):
+    if time_slot not in range(weekly_slots):
         raise ValueError("Time slot must be between 0-671")
     
     day = time_slot // daily_slots
