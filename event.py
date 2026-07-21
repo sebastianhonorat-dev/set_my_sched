@@ -1,5 +1,5 @@
 class Event:
-    next_id = 100
+    _next_id = 100
 
     def __init__(self,name, duration, freq, period, 
                  priority, day_window, time_window, 
@@ -106,8 +106,8 @@ class Event:
             raise ValueError("Gap days must be between 0-6.")
 
 
-        self.id = Event.next_id
-        Event.next_id += 1
+        self.id = Event._next_id
+        Event._next_id += 1
 
         self.name = name
         self.duration = duration
