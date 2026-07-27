@@ -106,7 +106,7 @@ class Event:
             raise ValueError("Gap days must be between 0-6.")
 
 
-        self.id = Event._next_id
+        self.event_id = Event._next_id
         Event._next_id += 1
 
         self.name = name
