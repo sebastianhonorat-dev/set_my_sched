@@ -1,9 +1,12 @@
+from constraints import ConstraintResult
+
+
 class Event:
     _next_id = 100
 
     def __init__(self,name, duration, freq, period, 
                  priority, day_window, time_window, 
-                 preferred_day, preferred_time,hard_flag=True, 
+                 preferred_start,hard_flag=True, 
                  min_gap_days=0, pref_gap_days = 0):
 
         #TypeErrors
@@ -24,29 +27,20 @@ class Event:
         
         if type(day_window) is not tuple:
             raise TypeError("Date window days must be a tuple of integers.")
-        for day in day_window:
-            if type(day) is not int:
-                raise TypeError("Each day within the tuple must be an integer")
             
         if type(time_window) is not tuple:
             raise TypeError("Time window must be a nested tuple of integers.")
         for time_span in time_window:
             if type(time_span) is not tuple:
                 raise TypeError("Each time span within the tuple must also be an tuple")
-            if len(time_span) == 0:
-                continue
-            if type(time_span[0]) is not int or type(time_span[1] )is not int:
+            if type(time_span[0]) is not int:
+                raise TypeError("Each day within the tuple must be an integer")
+            if type(time_span[1]) is not int or type(time_span[2] )is not int:
                 raise TypeError("Each time within the nested tuples must be an integer")
-
-        if type(preferred_day) is not tuple:
-            raise TypeError("Preferred days must be a tuple of integers.")
-        for day in preferred_day:
-            if type(day) is not int:
-                raise TypeError("Days within the tuple must be integer ")
             
-        if type(preferred_time) is not tuple:
+        if type(preferred_start) is not tuple:
             raise TypeError("Preferred times must be a tuple of integer.")
-        for time in preferred_time:
+        for time in preferred_start:
             if type(time) is not int:
                 raise TypeError("Times within the tuple must be integer ")
             
@@ -76,28 +70,24 @@ class Event:
         if priority < 0 or priority > 10:
             raise ValueError("Priority must between 0-10.")
         
-        for day in day_window:
-            if day < 0 or day > 6:
-                raise ValueError("Days in the day window must be between 0-6")
-        if len(day_window) > 6:
-            raise ValueError("Day window allows a maximum of 6 days.")
-
         for time_span in time_window:
-            if len(time_span) not in (0,2):
-                raise ValueError("Time window must include two (2) time slots or None")
+            if len(time_span) not in (0,3):
+                raise ValueError("Time window must include a day and two (2) time slots or None")
             if len(time_span) == 0:
                 continue
-            if (time_span[0] < 0 or time_span[0] > 2359 or
-             time_span[1] < 0 or time_span[1] > 2359):
+            if time_span[0] < 0 or time_span[0] > 6:
+                raise ValueError("Days in the day window must be between 0-6")
+            if (time_span[1] < 0 or time_span[1] > 2359 or
+             time_span[2] < 0 or time_span[2] > 2359):
                 raise ValueError("Time window values must be between 0000 and 2359")
         
-        for day in preferred_day:
-            if day < 0 or day > 6:
-                raise ValueError("Preffered days must be between 0-6")
-            
-        for time in preferred_time:
-            if time < 0 or time > 2359:
-                raise ValueError("Time window values must be between 0000 and 2359")
+        for time_span in preferred_start:
+            if len(time_span) not in (0,2):
+                raise ValueError("Time window must include a day and a starting time slots or None")
+            if time_span[0] < 0 or time_span[0] > 6:
+                raise ValueError("Day for the preferred start must be between 0 and 6")
+            if time_span[1] < 0 or time_span[1] > 2359:
+                raise ValueError("Time for the preferred start must be between 0000 and 2359")
         
         if min_gap_days < 0 or min_gap_days > 6:
             raise ValueError("Gap days must between 0-6.")
@@ -115,9 +105,8 @@ class Event:
         self.period = period
         self.priority = priority
         self.hard_flag = hard_flag
-        self.day_window = day_window
         self.time_window = time_window
         self.preferred_day = preferred_day
-        self.preferred_time = preferred_time
+        self.preferred_start = preferred_start
         self.min_gap_days = min_gap_days
         self.pref_gap_days = pref_gap_days
