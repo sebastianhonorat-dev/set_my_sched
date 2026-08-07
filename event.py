@@ -1,11 +1,8 @@
-from constraints import ConstraintResult
-
-
 class Event:
     _next_id = 100
 
     def __init__(self,name, duration, freq, period, 
-                 priority, day_window, time_window, 
+                 priority, time_window, 
                  preferred_start,hard_flag=True, 
                  min_gap_days=0, pref_gap_days = 0):
 
@@ -24,9 +21,6 @@ class Event:
         
         if type(priority) is not int:
             raise TypeError("Priority must be integer.")
-        
-        if type(day_window) is not tuple:
-            raise TypeError("Date window days must be a tuple of integers.")
             
         if type(time_window) is not tuple:
             raise TypeError("Time window must be a nested tuple of integers.")

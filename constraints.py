@@ -8,6 +8,13 @@ class ConstraintResult:
         self.passed = passed
         self.reasons = reasons
 
+class SchedulerConfig:
+
+    def __init__(self, avoid_hours=(0,6), allow_cross_midnight=False, default_min_gap_slots=96):
+        self.avoid_hours = range(*avoid_hours)
+        self.allow_cross_midnight = allow_cross_midnight
+        self.default_min_gap_slots = default_min_gap_slots
+
 def can_place (event: Event, schedule:Schedule, start_slot: int):
     reasons_list = []
     end_slot = get_end_slot(event, start_slot)
@@ -40,7 +47,7 @@ def hard_check (event: Event, schedule:Schedule, start_slot: int):
     for time in event.time_window:
 
         first_slot = to_slot(time[0],time[1]//100,time[1]%100)
-        end_slot = get_end_slot(event,to_slot(time[0],time[2]//100,time[2]%100))
+        end_slot = to_slot(time[0],time[2]//100,time[2]%100)
         hard_slots.extend(range(first_slot,end_slot+1))
 
 
@@ -48,21 +55,21 @@ def hard_check (event: Event, schedule:Schedule, start_slot: int):
 
     if start_slot < 0 or start_slot >= weekly_slots:
         # raise ValueError(f"Start time must be between 0 and {weekly_slots - 1}")
-        reasons_list.append(f"Start time must be between 0 and {weekly_slots - 1}")
+        reasons_list.append(f"Start time must be between the slots dedicated to the week (0 and {weekly_slots - 1})")
         
     if  end_slot >= weekly_slots:
         # raise ValueError(f"End time must be between 0 and {weekly_slots - 1}")
-        reasons_list.append(f"End time must be between 0 and {weekly_slots - 1}")  
+        reasons_list.append(f"End time must be between the slots dedicated to the week (0 and {weekly_slots - 1}) ")  
     
-    if start_slot not in hard_slots:
-        reasons_list.append(f"Start time must be within hard time_window {event.day_window}")  
+    if start_slot not in hard_slots or end_slot not in hard_slots:
+        reasons_list.append(f"Slots are outside the requested slots") 
 
     if len(reasons_list)==0:
         for slot in schedule.slots[start_slot:end_slot+1]:
         
             if slot is not None:
                 # raise ValueError("Slots are not available")
-                reasons_list.append(f"Slots are not available")
+                reasons_list.append(f"Slots are occupied")
                 break
 
     freq = 0
@@ -94,7 +101,7 @@ def soft_check (event: Event, schedule:Schedule, start_slot: int):
         soft_slots.extend(range(first_slot,end_slot))
 
     if start_slot not in soft_slots:
-        reasons.append(f"Start time is not one of the preffered start times {event.preferred_start}") 
+        reasons.append(f"Start time is not one of the preferred start times {event.preferred_start}") 
         if event.priority > 8:
             reasons.append(f"High priority event outside one of the preffered start times {event.preferred_start}")
 
@@ -149,7 +156,7 @@ def check_gap(schedule: Schedule, event: Event, start_slot:int):
 
     for placement in schedule.placements.values():
         if placement.event_id == event.event_id:
-            gap.append(abs(placement.start - start_slot))
+            gap.append(abs(placement.start - start_slot)//96)
 
     return gap
 
@@ -160,5 +167,5 @@ def validate_placement (event: Event, schedule:Schedule, start_slot: int):
     return {
         "valid":hard_check_results.passed,
         "hard_failures":hard_check_results.reasons,
-        "soft_failures":soft_check_results.reasons
+        "soft_warnings":soft_check_results.reasons
     }

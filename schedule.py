@@ -1,12 +1,10 @@
 from time_rep import weekly_slots
 from event import Event
-import constraints
-from constraints import ConstraintResult
 
 class Placement:
     _next_placement_id = 100
 
-    def __init__(self, event: Event, schedule: Schedule, start:int):
+    def __init__(self, event: Event, start:int):
         end = start+event.duration -1
 
         if start > end:
@@ -51,18 +49,34 @@ class Schedule:
         self.slots = [None]*total_slots
         self.placements = {}
     
-    def place(self, placement: Placement) -> ConstraintResult:
+    def place(self, placement: Placement):
+        placed = False
 
-        result = constraints.can_place(placement)
+        if placement.start < 0 or placement.start >= weekly_slots:
+            # raise ValueError(f"Start time must be between 0 and {weekly_slots - 1}")
+            return placed
+        if placement.end < 0 or placement.end >= weekly_slots:
+            # raise ValueError(f"End time must be between 0 and {weekly_slots - 1}")
+            return placed
+        if self.slots[placement.start] or self.slots[ placement.end]:
+            # raise ValueError("Slot is not available")
+            return placed
+        
+        for slot in range(placement.start, placement.end+1):
+            if self.slots[slot] is not None:
+                self.remove(placement)
+                placed = False
+                break
 
-        if result.passed: 
+            self.slots[slot] = placement
 
-            for slot in range(placement.start, placement.end+1):
-                self.slots[slot] = placement
+            placed = True
 
+        if placed:
             self.placements[placement.placement_id]=placement
 
-        return result 
+
+        return placed
 
 
     def remove(self, placement: Placement):
