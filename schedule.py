@@ -1,11 +1,15 @@
 from time_rep import weekly_slots
 from event import Event
+
 class Placement:
     _next_placement_id = 100
 
-    def __init__(self, event: Event,start, end):
+    def __init__(self, event: Event, start:int):
+        end = start+event.duration -1
+
         if start > end:
             raise ValueError("The start value must be less than end value")
+
         self.placement_id = Placement._next_placement_id
         Placement._next_placement_id+=1
 
