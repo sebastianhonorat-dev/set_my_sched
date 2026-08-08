@@ -100,7 +100,6 @@ class Event:
         self.priority = priority
         self.hard_flag = hard_flag
         self.time_window = time_window
-        self.preferred_day = preferred_day
         self.preferred_start = preferred_start
         self.min_gap_days = min_gap_days
         self.pref_gap_days = pref_gap_days

@@ -13,8 +13,7 @@ class Placement:
         self.placement_id = Placement._next_placement_id
         Placement._next_placement_id+=1
 
-        self.event_id = event.id
-        self.name = event.name
+        self.event = event
         self.start = start
         self.end = end
         self.duration = event.duration
@@ -24,8 +23,7 @@ class Placement:
         copied = Placement.__new__(Placement)
 
         copied.placement_id = self.placement_id
-        copied.event_id = self.event_id
-        copied.name = self.name
+        copied.event = self.event
         copied.start = self.start
         copied.end = self.end
         copied.duration = self.duration
@@ -73,7 +71,10 @@ class Schedule:
             placed = True
 
         if placed:
-            self.placements[placement.placement_id]=placement
+            if placement.event in self.placements:
+                self.placements[placement.event].append(placement)
+            else:
+                self.placements[placement.event]=[placement]
 
 
         return placed
@@ -90,7 +91,7 @@ class Schedule:
 
                     removed= True
         if removed:
-            del self.placements[placement.placement_id]
+            del self.placements[placement.event]
 
         return removed
     
@@ -155,9 +156,10 @@ class Schedule:
         return free_time
     
     def event_lookup(self, event: Event):
-        return [occurance for occurance in self.placements.values()
-                if occurance.event_id == event.event_id
-        ]
+        return len([
+            placements for dict_event,placements in self.placements.items()
+            if event == dict_event
+        ])
 
     def frequency_satisfied(self, event: Event):
         return len(self.event_lookup(event)) == event.freq
