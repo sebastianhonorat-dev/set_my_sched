@@ -36,7 +36,7 @@ class Placement:
             return NotImplemented
 
         return (
-            self.event_id == other.event_id
+            self.event == other.event
             and self.start == other.start
             and self.end == other.end
         )
@@ -56,7 +56,7 @@ class Schedule:
         if placement.end < 0 or placement.end >= weekly_slots:
             # raise ValueError(f"End time must be between 0 and {weekly_slots - 1}")
             return placed
-        if self.slots[placement.start] or self.slots[ placement.end]:
+        if self.slots[placement.start]:
             # raise ValueError("Slot is not available")
             return placed
         
@@ -76,7 +76,6 @@ class Schedule:
             else:
                 self.placements[placement.event]=[placement]
 
-
         return placed
 
 
@@ -90,8 +89,16 @@ class Schedule:
                     self.slots[i] = None
 
                     removed= True
-        if removed:
-            del self.placements[placement.event]
+
+        if (placement.event in self.placements
+        and placement in self.placements[placement.event]):
+            
+            if removed:
+                placements = self.placements[placement.event]
+                self.placements[placement.event]=placements.remove(placement)
+
+            if not self.placements[placement.event]:
+                del self.placements[placement.event]
 
         return removed
     
@@ -185,17 +192,28 @@ class Schedule:
     def copy(self):
         copied_schedule = Schedule(len(self.slots))
         copied_placements = {}
+        placement_copies = {}
 
         for i, placement in enumerate(self.slots):
             if placement is None:
                 continue
 
-            if placement.placement_id not in copied_placements:
-                copied_placement = placement.copy()
-                copied_placements[placement.placement_id] = copied_placement
-                copied_schedule.placements[placement.placement_id] = copied_placement
+            event = placement.event
 
-            copied_schedule.slots[i] = copied_placements[placement.placement_id]
+            # Copy this Placement only once
+            if id(placement) not in placement_copies:
+                copied_placement = placement.copy()
+                placement_copies[id(placement)] = copied_placement
+
+                if event not in copied_placements:
+                    copied_placements[event] = []
+
+                copied_placements[event].append(copied_placement)
+
+            # Reuse the same copied Placement for every slot it occupies
+            copied_schedule.slots[i] = placement_copies[id(placement)]
+
+        copied_schedule.placements = copied_placements
 
         return copied_schedule
     

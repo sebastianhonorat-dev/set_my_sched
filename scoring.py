@@ -12,7 +12,7 @@ class ScoreBreakdown:
 class ScheduleScoringError(Exception):
     pass
 
-class SimonCowell:
+class Judge:
 
     def score (self,schedule:Schedule, external_event_list:set[Event]):
         
@@ -65,7 +65,7 @@ class SimonCowell:
                 if event.freq < 0:
                     raise ScheduleScoringError(f"Event frequency for {event.name} was set below 0")
                 if freq > event.freq:
-                    raise ScheduleScoringError(f"Placements surpassed the requested event frequency for {event.name}")
+                    raise ScheduleScoringError(f"Placements ({freq}) surpassed the requested event frequency ({event.freq}) for {event.name}")
                 
                 try:
                     occurance_satified += freq/event.freq
