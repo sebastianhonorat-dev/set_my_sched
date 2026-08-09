@@ -73,13 +73,14 @@ def hard_check (event: Event, schedule:Schedule, start_slot: int):
                 break
 
     freq = 0
-    for placement in schedule.placements.values():
-        if placement.event_id == event.event_id:
-            freq +=1
+    for placements in schedule.placements.values():
+        for placement in placements:
+            if placement.event == event:
+                freq +=1
 
-        if freq == event.freq:
-            reasons_list.append(f"Event's frequency has already been fulfilled")
-            break
+            if freq == event.freq:
+                reasons_list.append(f"Event's frequency has already been fulfilled")
+                break
 
     gaps = check_gap(schedule, event, start_slot)
     for gap in gaps:
@@ -96,13 +97,12 @@ def soft_check (event: Event, schedule:Schedule, start_slot: int):
     soft_slots = []
 
     for time in event.preferred_start:
-        first_slot = to_slot(time[0],time[1]//100,time[1]%100)
-        end_slot = get_end_slot(event,first_slot)
-        soft_slots.extend(range(first_slot,end_slot))
+        pref_slot = to_slot(time[0],time[1]//100,time[1]%100)
+        soft_slots.append(pref_slot)
 
     if start_slot not in soft_slots:
         reasons.append(f"Start time is not one of the preferred start times {event.preferred_start}") 
-        if event.priority > 8:
+        if event.priority > 7:
             reasons.append(f"High priority event outside one of the preffered start times {event.preferred_start}")
 
     gaps = check_gap(schedule, event, start_slot)
@@ -154,15 +154,20 @@ def cross_midnight(event:Event, start_slot):
 def check_gap(schedule: Schedule, event: Event, start_slot:int):
     gap = []
 
-    for placement in schedule.placements.values():
-        if placement.event_id == event.event_id:
-            gap.append(abs(placement.start - start_slot)//96)
+    for placements in schedule.placements.values():
+        for placement in placements:
+            if placement.event == event:
+                gap.append(abs(placement.start - start_slot)//96)
 
     return gap
 
 def validate_placement (event: Event, schedule:Schedule, start_slot: int):
     hard_check_results = hard_check(event, schedule, start_slot)
-    soft_check_results = soft_check(event, schedule, start_slot)
+
+    if hard_check_results.passed:
+        soft_check_results = soft_check(event, schedule, start_slot)
+    else:
+        soft_check_results=ConstraintResult(False,None)
 
     return {
         "valid":hard_check_results.passed,

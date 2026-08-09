@@ -1,4 +1,6 @@
 .vscode/
+tests/__pycache__
+docs/papers
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
