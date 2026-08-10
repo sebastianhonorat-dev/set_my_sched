@@ -124,13 +124,19 @@ class GreedyScheduler:
         start = time.perf_counter()
 
         failure_reasons = []
-        priority_sort_events = sorted(self.events, key=lambda x:x.priority, reverse=True)
+
+        sort_events = sorted(
+            self.events, 
+            key=lambda x:(x.hard_flag,x.freq*x.duration**2/len(self.return_candidate_slots(x))),
+            reverse=True
+        )
+
         event_scheduled = 0 
         event_failed = 0
         completed = True
         status = "success"
 
-        for event in priority_sort_events:
+        for event in sort_events:
             result = self.place(event)
 
             if result.status == "corrupt":

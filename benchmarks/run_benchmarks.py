@@ -1,16 +1,21 @@
 import argparse
 import json
-import time
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
+from unittest.mock import mock_open, patch
 
 from algo.greedy_boy import GreedyScheduler
 from schedule import Schedule
 from scoring import Judge
 from time_rep import to_slot, weekly_slots
 
-from benchmarks.challenging_week import SCENARIO_NAME, build_events, scenario_summary
+from benchmarks.optimization_stress import (
+    SCENARIO_NAME,
+    build_events,
+    scenario_summary,
+)
+from benchmarks.optimization_stress_audit import run_audit, write_audit_report
 
 
 ROOT = Path(__file__).parents[1]
@@ -23,7 +28,15 @@ class BenchmarkResult:
     algorithm: str
     generated_at_utc: str
     status: str
+    scenario_passed: bool
+    feasibility_passed: bool
     valid: bool
+    audit_verified: bool
+    scenario_checksum: str
+    audited_schedules: int
+    audited_low_score: float
+    audited_high_score: float
+    audited_score_spread_percent: float
     runtime_seconds: float
     candidate_placements_evaluated: int
     events_requested: int
@@ -83,49 +96,60 @@ def validate_schedule(schedule: Schedule) -> list[str]:
 
 def run_greedy(events) -> tuple[Schedule, str, list[str], float, int]:
     scheduler = TrackingGreedyScheduler(Schedule(), events)
-    failures = []
-    status = "success"
-    started = time.perf_counter()
-
-    for event in sorted(events, key=lambda item: item.priority, reverse=True):
-        placement_result = scheduler.place(event)
-        if placement_result.status == "success":
-            continue
-        failures.append(f"{event.name}: " + "; ".join(placement_result.reasons))
-        status = placement_result.status
-        if event.hard_flag or placement_result.status == "corrupt":
-            break
-
-    runtime = time.perf_counter() - started
-    return scheduler.schedule, status, failures, runtime, scheduler.candidates_evaluated
+    with patch("algo.greedy_boy.open", mock_open(), create=True):
+        result = scheduler.generate()
+    return (
+        result.schedule,
+        result.status,
+        result.reasons,
+        result.runtime,
+        scheduler.candidates_evaluated,
+    )
 
 
 ALGORITHMS = {"greedy": run_greedy}
 
 
 def benchmark(algorithm: str) -> BenchmarkResult:
+    audit = run_audit(validate_schedule)
+    write_audit_report(audit)
+
     events = build_events()
     schedule, status, failures, runtime, candidates = ALGORITHMS[algorithm](events)
     validation_failures = validate_schedule(schedule)
     scheduled_events = set(schedule.placements)
     score = Judge().score(schedule, set(events)).total
     summary = scenario_summary()
+    required_completed = sum(event.hard_flag for event in scheduled_events)
+    occurrences_scheduled = sum(len(items) for items in schedule.placements.values())
+    feasibility_passed = (
+        not validation_failures
+        and occurrences_scheduled == summary["requested_occurrences"]
+    )
 
     return BenchmarkResult(
         scenario=SCENARIO_NAME,
         algorithm=algorithm,
         generated_at_utc=datetime.now(timezone.utc).isoformat(),
         status=status,
+        scenario_passed=feasibility_passed,
+        feasibility_passed=feasibility_passed,
         valid=not validation_failures,
+        audit_verified=True,
+        scenario_checksum=audit.checksum,
+        audited_schedules=audit.schedules_verified,
+        audited_low_score=audit.lowest_score,
+        audited_high_score=audit.highest_score,
+        audited_score_spread_percent=audit.score_spread_percent,
         runtime_seconds=runtime,
         candidate_placements_evaluated=candidates,
         events_requested=len(events),
         events_scheduled=len(scheduled_events),
         events_failed=len(events) - len(scheduled_events),
-        required_events_completed=sum(event.hard_flag for event in scheduled_events),
+        required_events_completed=required_completed,
         optional_events_completed=sum(not event.hard_flag for event in scheduled_events),
         occurrences_requested=int(summary["requested_occurrences"]),
-        occurrences_scheduled=sum(len(items) for items in schedule.placements.values()),
+        occurrences_scheduled=occurrences_scheduled,
         occupancy_percent=schedule.occupancy() * 100,
         final_schedule_score=score,
         failures=failures,
@@ -134,10 +158,14 @@ def benchmark(algorithm: str) -> BenchmarkResult:
 
 
 def write_report(result: BenchmarkResult) -> tuple[Path, Path]:
-    REPORT_DIR.mkdir(parents=True, exist_ok=True)
-    stem = f"{result.algorithm}_{result.scenario}"
-    json_path = REPORT_DIR / f"{stem}.json"
-    markdown_path = REPORT_DIR / f"{stem}.md"
+    algorithm_report_dir = REPORT_DIR / result.algorithm
+    algorithm_report_dir.mkdir(parents=True, exist_ok=True)
+    timestamp = datetime.fromisoformat(result.generated_at_utc).strftime(
+        "%Y%m%dT%H%M%S_%fZ"
+    )
+    stem = f"{result.algorithm}_{result.scenario}_{timestamp}"
+    json_path = algorithm_report_dir / f"{stem}.json"
+    markdown_path = algorithm_report_dir / f"{stem}.md"
     json_path.write_text(json.dumps(asdict(result), indent=2) + "\n", encoding="ascii")
 
     failures = "\n".join(f"- {reason}" for reason in result.failures) or "- None"
@@ -151,7 +179,11 @@ def write_report(result: BenchmarkResult) -> tuple[Path, Path]:
 
 - Name: `{result.scenario}`
 - Status: `{result.status}`
+- Scenario passed: `{result.scenario_passed}`
+- Feasibility passed: `{result.feasibility_passed}`
 - Valid schedule: `{result.valid}`
+- Ten-schedule audit verified: `{result.audit_verified}`
+- Scenario SHA-256: `{result.scenario_checksum}`
 - Generated: `{result.generated_at_utc}`
 
 ## Results
@@ -169,6 +201,10 @@ def write_report(result: BenchmarkResult) -> tuple[Path, Path]:
 | Occurrences scheduled | {result.occurrences_scheduled} |
 | Occupancy | {result.occupancy_percent:.2f}% |
 | Final schedule score | {result.final_schedule_score:.6f} |
+| Audited complete schedules | {result.audited_schedules} |
+| Audited lowest score | {result.audited_low_score:.6f} |
+| Audited highest score | {result.audited_high_score:.6f} |
+| Audited score spread | {result.audited_score_spread_percent:.2f}% |
 
 ## Scheduling Failures
 
