@@ -1,0 +1,552 @@
+{
+  "scenario": "optimization_stress_v2",
+  "checksum": "50f6096e173f9e2c1a4e3a11a1944cd15a2704958fec162fa2e8b025bd193ef6",
+  "schedules_verified": 10,
+  "minimum_changed_occurrences": 4,
+  "minimum_displacement_slots": 70,
+  "lowest_score": 10.374585769333914,
+  "highest_score": 18.54511250732847,
+  "score_spread_percent": 44.057574386598134,
+  "schedules": [
+    {
+      "audit_id": "audit-01",
+      "score": 18.54511250732847,
+      "placements": {
+        "Workout": [
+          28,
+          220,
+          508
+        ],
+        "Study": [
+          80,
+          272,
+          560
+        ],
+        "Medical Appointment": [
+          244
+        ],
+        "Meal Preparation": [
+          168,
+          360,
+          544
+        ],
+        "Language Practice": [
+          33,
+          124,
+          316,
+          412
+        ],
+        "Focus Block": [
+          36
+        ],
+        "Reading": [
+          56
+        ],
+        "Project Lab": [
+          128
+        ],
+        "Personal Project": [
+          156
+        ],
+        "Administration": [
+          328
+        ],
+        "Music Practice": [
+          356
+        ],
+        "Client Review": [
+          420
+        ],
+        "Social Event": [
+          456
+        ]
+      }
+    },
+    {
+      "audit_id": "audit-02",
+      "score": 10.374585769333914,
+      "placements": {
+        "Workout": [
+          26,
+          218,
+          506
+        ],
+        "Study": [
+          72,
+          264,
+          552
+        ],
+        "Medical Appointment": [
+          244
+        ],
+        "Meal Preparation": [
+          168,
+          360,
+          544
+        ],
+        "Language Practice": [
+          33,
+          120,
+          312,
+          408
+        ],
+        "Focus Block": [
+          56
+        ],
+        "Reading": [
+          36
+        ],
+        "Project Lab": [
+          156
+        ],
+        "Personal Project": [
+          128
+        ],
+        "Administration": [
+          356
+        ],
+        "Music Practice": [
+          328
+        ],
+        "Client Review": [
+          456
+        ],
+        "Social Event": [
+          420
+        ]
+      }
+    },
+    {
+      "audit_id": "audit-03",
+      "score": 13.906131326023235,
+      "placements": {
+        "Workout": [
+          28,
+          220,
+          508
+        ],
+        "Study": [
+          88,
+          280,
+          568
+        ],
+        "Medical Appointment": [
+          244
+        ],
+        "Meal Preparation": [
+          168,
+          360,
+          544
+        ],
+        "Language Practice": [
+          33,
+          124,
+          316,
+          412
+        ],
+        "Focus Block": [
+          56
+        ],
+        "Reading": [
+          36
+        ],
+        "Project Lab": [
+          156
+        ],
+        "Personal Project": [
+          128
+        ],
+        "Administration": [
+          328
+        ],
+        "Music Practice": [
+          356
+        ],
+        "Client Review": [
+          420
+        ],
+        "Social Event": [
+          456
+        ]
+      }
+    },
+    {
+      "audit_id": "audit-04",
+      "score": 15.013566950639147,
+      "placements": {
+        "Workout": [
+          26,
+          218,
+          506
+        ],
+        "Study": [
+          76,
+          268,
+          556
+        ],
+        "Medical Appointment": [
+          244
+        ],
+        "Meal Preparation": [
+          168,
+          360,
+          544
+        ],
+        "Language Practice": [
+          33,
+          120,
+          312,
+          408
+        ],
+        "Focus Block": [
+          36
+        ],
+        "Reading": [
+          56
+        ],
+        "Project Lab": [
+          128
+        ],
+        "Personal Project": [
+          156
+        ],
+        "Administration": [
+          356
+        ],
+        "Music Practice": [
+          328
+        ],
+        "Client Review": [
+          456
+        ],
+        "Social Event": [
+          420
+        ]
+      }
+    },
+    {
+      "audit_id": "audit-05",
+      "score": 14.89059333414491,
+      "placements": {
+        "Workout": [
+          28,
+          220,
+          508
+        ],
+        "Study": [
+          84,
+          276,
+          564
+        ],
+        "Medical Appointment": [
+          244
+        ],
+        "Meal Preparation": [
+          168,
+          360,
+          544
+        ],
+        "Language Practice": [
+          33,
+          124,
+          316,
+          412
+        ],
+        "Focus Block": [
+          56
+        ],
+        "Reading": [
+          36
+        ],
+        "Project Lab": [
+          128
+        ],
+        "Personal Project": [
+          156
+        ],
+        "Administration": [
+          356
+        ],
+        "Music Practice": [
+          328
+        ],
+        "Client Review": [
+          420
+        ],
+        "Social Event": [
+          456
+        ]
+      }
+    },
+    {
+      "audit_id": "audit-06",
+      "score": 14.029104942517474,
+      "placements": {
+        "Workout": [
+          26,
+          218,
+          506
+        ],
+        "Study": [
+          72,
+          264,
+          552
+        ],
+        "Medical Appointment": [
+          244
+        ],
+        "Meal Preparation": [
+          168,
+          360,
+          544
+        ],
+        "Language Practice": [
+          33,
+          120,
+          312,
+          408
+        ],
+        "Focus Block": [
+          36
+        ],
+        "Reading": [
+          56
+        ],
+        "Project Lab": [
+          156
+        ],
+        "Personal Project": [
+          128
+        ],
+        "Administration": [
+          328
+        ],
+        "Music Practice": [
+          356
+        ],
+        "Client Review": [
+          456
+        ],
+        "Social Event": [
+          420
+        ]
+      }
+    },
+    {
+      "audit_id": "audit-07",
+      "score": 14.467440671111072,
+      "placements": {
+        "Workout": [
+          28,
+          220,
+          508
+        ],
+        "Study": [
+          88,
+          280,
+          568
+        ],
+        "Medical Appointment": [
+          244
+        ],
+        "Meal Preparation": [
+          168,
+          360,
+          544
+        ],
+        "Language Practice": [
+          33,
+          124,
+          316,
+          412
+        ],
+        "Focus Block": [
+          56
+        ],
+        "Reading": [
+          36
+        ],
+        "Project Lab": [
+          128
+        ],
+        "Personal Project": [
+          156
+        ],
+        "Administration": [
+          328
+        ],
+        "Music Practice": [
+          356
+        ],
+        "Client Review": [
+          456
+        ],
+        "Social Event": [
+          420
+        ]
+      }
+    },
+    {
+      "audit_id": "audit-08",
+      "score": 14.45225760555131,
+      "placements": {
+        "Workout": [
+          26,
+          218,
+          506
+        ],
+        "Study": [
+          80,
+          272,
+          560
+        ],
+        "Medical Appointment": [
+          244
+        ],
+        "Meal Preparation": [
+          168,
+          360,
+          544
+        ],
+        "Language Practice": [
+          33,
+          120,
+          312,
+          408
+        ],
+        "Focus Block": [
+          36
+        ],
+        "Reading": [
+          56
+        ],
+        "Project Lab": [
+          156
+        ],
+        "Personal Project": [
+          128
+        ],
+        "Administration": [
+          356
+        ],
+        "Music Practice": [
+          328
+        ],
+        "Client Review": [
+          420
+        ],
+        "Social Event": [
+          456
+        ]
+      }
+    },
+    {
+      "audit_id": "audit-09",
+      "score": 12.359119598974893,
+      "placements": {
+        "Workout": [
+          28,
+          220,
+          508
+        ],
+        "Study": [
+          76,
+          268,
+          556
+        ],
+        "Medical Appointment": [
+          244
+        ],
+        "Meal Preparation": [
+          168,
+          360,
+          544
+        ],
+        "Language Practice": [
+          33,
+          124,
+          316,
+          412
+        ],
+        "Focus Block": [
+          56
+        ],
+        "Reading": [
+          36
+        ],
+        "Project Lab": [
+          156
+        ],
+        "Personal Project": [
+          128
+        ],
+        "Administration": [
+          356
+        ],
+        "Music Practice": [
+          328
+        ],
+        "Client Review": [
+          420
+        ],
+        "Social Event": [
+          456
+        ]
+      }
+    },
+    {
+      "audit_id": "audit-10",
+      "score": 16.560578677687488,
+      "placements": {
+        "Workout": [
+          26,
+          218,
+          506
+        ],
+        "Study": [
+          84,
+          276,
+          564
+        ],
+        "Medical Appointment": [
+          244
+        ],
+        "Meal Preparation": [
+          168,
+          360,
+          544
+        ],
+        "Language Practice": [
+          33,
+          120,
+          312,
+          408
+        ],
+        "Focus Block": [
+          36
+        ],
+        "Reading": [
+          56
+        ],
+        "Project Lab": [
+          128
+        ],
+        "Personal Project": [
+          156
+        ],
+        "Administration": [
+          328
+        ],
+        "Music Practice": [
+          356
+        ],
+        "Client Review": [
+          456
+        ],
+        "Social Event": [
+          420
+        ]
+      }
+    }
+  ]
+}
